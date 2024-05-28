@@ -1,0 +1,27 @@
+----kafka topic 相關指令 (無security設定)
+kafka-topics --list --bootstrap-server broker:9092
+
+kafka-topics --create --topic test --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server broker:9092
+
+
+----acl 設定 (有security設定)
+
+kafka-acls --bootstrap-server broker:9092 --command-config adminclient-configs.conf --list --topic '*'
+
+kafka-acls --bootstrap-server broker:9093 --command-config adminclient-configs.conf --add -allow-principal User:usera --operation read --operation write --topic user
+
+kafka-acls --bootstrap-server broker:9092 --command-config adminclient-configs.conf --add -allow-principal User:userb --operation read --operation write --topic user
+
+
+----SASL 
+kafka-configs --zookeeper zookeeper:2181 --describe --entity-type users
+
+kafka-configs --bootstrap-server broker:9092 --describe --entity-type users
+
+kafka-configs --zookeeper zookeeper:2181 --alter --add-config 'SCRAM-SHA-256=[password=admin-secret],SCRAM-SHA-512=[password=admin-secret]' --entity-type users --entity-name admin
+
+kafka-configs --zookeeper zookeeper:2181 --alter --add-config 'SCRAM-SHA-256=[password=redpandasecret123],SCRAM-SHA-512=[password=redpandasecret123]' --entity-type users --entity-name redpanda
+
+kafka-configs --zookeeper zookeeper:2181 --alter --add-config 'SCRAM-SHA-256=[password=usera],SCRAM-SHA-512=[password=usera]' --entity-type users --entity-name usera
+
+kafka-configs --zookeeper zookeeper:2181 --alter --add-config 'SCRAM-SHA-256=[password=userb],SCRAM-SHA-512=[password=userb]' --entity-type users --entity-name userb
